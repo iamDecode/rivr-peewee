@@ -92,3 +92,13 @@ class Database(Middleware):
     def __call__(self, view):
         return self.wrap(view)
 
+    # Proxy to database
+
+    def create_tables(self, *args, **kwargs):
+        return self.create_tables(*args, **kwargs)
+
+    def transaction(self, *args, **kwargs):
+        return self.database(*args, **kwargs)
+
+    def atomic(self, *args, **kwargs):
+        return self.atomic(*args, **kwargs)
