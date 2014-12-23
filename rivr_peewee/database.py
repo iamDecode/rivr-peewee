@@ -95,10 +95,10 @@ class Database(Middleware):
     # Proxy to database
 
     def create_tables(self, *args, **kwargs):
-        return self.create_tables(*args, **kwargs)
+        return self.database.create_tables(*args, **kwargs)
 
     def transaction(self, *args, **kwargs):
-        return self.database(*args, **kwargs)
+        return self.database.transaction(*args, **kwargs)
 
     def atomic(self, *args, **kwargs):
-        return self.atomic(*args, **kwargs)
+        return self.database.atomic(*args, **kwargs)
