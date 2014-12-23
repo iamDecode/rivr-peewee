@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='rivr-peewee',
-    version='0.1.0',
+    version='0.1.1',
     description='rivr integration for the peewee database ORM.',
     url='https://github.com/rivrproject/rivr-peewee',
     packages=find_packages(),
