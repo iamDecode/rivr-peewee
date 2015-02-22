@@ -1,9 +1,15 @@
-import rivr
-import rivr_peewee
+from rivr import serve, Router
+from rivr.middleware import MiddlewareController
+from rivr_peewee import Database
+from rivr_peewee.views import ListView, DetailView
+from rivr_jinja import JinjaMiddleware
+from jinja2 import Environment, DictLoader
 import peewee
 
 
-database = rivr_peewee.Database(peewee.SqliteDatabase('example.sqlite'))
+## Models:
+
+database = Database(peewee.SqliteDatabase('example.sqlite'))
 
 class Task(database.Model):
     text = peewee.CharField()
@@ -11,13 +17,35 @@ class Task(database.Model):
     def __str__(self):
         return self.text
 
-@database
-def view(request):
-    def render(accumulator, task):
-        return accumulator + '<li>{}</li>'.format(task)
 
-    text = '<ul>' + reduce(render, Task.select(), '') + '</ul>'
-    return rivr.Response(text)
+## Views
+
+class TaskListView(ListView):
+    model = Task
+
+
+class TaskDetailView(DetailView):
+    model = Task
+
+
+## Templates
+
+TASK_LIST_TEMPLATE = """
+<h1>Tasks</h1>
+
+<ul>
+  {% for task in task_list %}
+    <li><a href="/tasks/{{ task.id }}">{{ task }}</a></li>
+  {% endfor %}
+</ul>
+"""
+
+TASK_DETAIL_TEMPLATE = """
+<a href="/">View all tasks</a>
+
+<h1>Task</h1>
+<p>{{ task }}</p>
+"""
 
 
 if __name__ == '__main__':
@@ -29,5 +57,21 @@ if __name__ == '__main__':
         # Database is already created
         pass
 
-    rivr.serve(view)
+    loader = DictLoader({
+        'task_list.html': TASK_LIST_TEMPLATE,
+        'task_detail.html': TASK_DETAIL_TEMPLATE,
+    })
+    environment = Environment(loader=loader)
+
+    router = Router(
+        (r'^$', TaskListView.as_view()),
+        (r'^tasks/(?P<pk>[\d]+)$', TaskDetailView.as_view()),
+    )
+
+    view = MiddlewareController.wrap(router,
+        database,
+        JinjaMiddleware(environment)
+    )
+
+    serve(view)
 
