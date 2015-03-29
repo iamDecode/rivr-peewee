@@ -1,6 +1,8 @@
 rivr-peewee
 ===========
 
+[![Build Status](http://img.shields.io/travis/rivrproject/rivr-peewee/master.svg?style=flat)](https://travis-ci.org/rivrproject/rivr-peewee)
+
 rivr integration for the peewee database ORM.
 
 ## Installation
