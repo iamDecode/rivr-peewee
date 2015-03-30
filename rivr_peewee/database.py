@@ -50,6 +50,15 @@ class Database(Middleware):
     def __call__(self, view):
         return self.wrap(view)
 
+    # With
+
+    def __enter__(self):
+        self.database.connect()
+
+    def __exit__(self, *args, **kwargs):
+        if not self.database.is_closed():
+            self.database.close()
+
     # Proxy to database
 
     def create_tables(self, *args, **kwargs):
