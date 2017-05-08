@@ -26,7 +26,8 @@ class Database(Middleware):
         self.Model = self.get_model_class()
 
     def process_request(self, request):
-        self.database.connect()
+        if self.database.is_closed():
+            self.database.connect()
 
     def process_response(self, request, response):
         if not self.database.is_closed():
