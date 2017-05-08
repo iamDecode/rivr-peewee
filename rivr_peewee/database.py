@@ -35,6 +35,10 @@ class Database(Middleware):
 
         return response
 
+    def process_exception(self, request, exception):
+        if not self.database.is_closed():
+            self.database.close()
+
     def get_model_class(self):
         class Model(peewee.Model):
             class Meta:
